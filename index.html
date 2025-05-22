@@ -1,0 +1,222 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11:11 Magic</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, 
+                #FF6B6B 0%,    /* Яркий коралловый */
+                #FF8E8E 25%,   /* Насыщенный розовый */
+                #FFB6C1 50%,   /* Светло-розовый */
+                #FFD1DC 75%,   /* Молочный розовый */
+                #FFFFFF 100%   /* Белый для контраста */
+            );
+            background-size: 300% 300%;  /* Увеличили размер для большей анимации */
+            animation: gradientFlow 6s ease infinite;  /* Ускорили анимацию */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            touch-action: manipulation;
+            cursor: pointer;
+        }
+
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .big-question {
+            font-size: 120px;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            transition: all 0.5s ease;
+            position: relative;
+            height: 130px;
+        }
+
+        .time-container {
+            display: flex;
+            font-size: 60px;
+            color: rgba(255, 255, 255, 0.8);
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+            gap: 10px;
+        }
+
+        .digit {
+            width: 40px;
+            text-align: center;
+            transition: all 0.5s ease;
+        }
+
+        .colon {
+            width: 10px;
+            text-align: center;
+        }
+
+        @keyframes digitAnimation {
+            0% { transform: scale(1) rotate(0deg); opacity: 0; }
+            50% { transform: scale(1.5) rotate(180deg); opacity: 1; }
+            100% { transform: scale(1) rotate(360deg); opacity: 1; }
+        }
+
+        .animated {
+            animation: digitAnimation 1s ease-out forwards;
+        }
+
+        .message-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: white;
+            text-align: center;
+            max-width: 90%;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+            white-space: pre-line;
+            word-wrap: break-word;
+            padding: 15px;
+            line-height: 1.5;
+        }
+
+        .message-visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .typing {
+            border-right: 2px solid white;
+            animation: blinkCursor 0.7s infinite;
+        }
+
+        @keyframes blinkCursor {
+            from, to { border-color: transparent; }
+            50% { border-color: white; }
+        }
+
+        @keyframes shrinkQuestion {
+            to { 
+                font-size: 0;
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+        }
+
+        .shrink {
+            animation: shrinkQuestion 0.5s forwards;
+        }
+
+        @media (max-width: 768px) {
+            .message-container {
+                font-size: 20px;
+                max-width: 85%;
+            }
+            
+            .big-question {
+                font-size: 80px;
+            }
+            
+            .time-container {
+                font-size: 40px;
+                gap: 5px;
+            }
+            
+            .digit {
+                width: 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .message-container {
+                font-size: 18px;
+                padding: 10px;
+            }
+            
+            .big-question {
+                font-size: 60px;
+            }
+            
+            .time-container {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="big-question" id="bigQuestion">?</div>
+    <div class="time-container" id="timeContainer">
+        <div class="digit">?</div>
+        <div class="digit">?</div>
+        <div class="colon">:</div>
+        <div class="digit">?</div>
+        <div class="digit">?</div>
+    </div>
+    <div class="message-container" id="messageContainer"></div>
+
+    <script>
+        const digits = document.querySelectorAll('.digit');
+        const bigQuestion = document.getElementById('bigQuestion');
+        const messageContainer = document.getElementById('messageContainer');
+        let animationStarted = false;
+        const messageText = `Ты безумно потрясающая
+девушка
+🥹❤️`;
+
+        function startAnimations() {
+            if (animationStarted) return;
+            animationStarted = true;
+            
+            digits.forEach((digit, index) => {
+                setTimeout(() => {
+                    digit.classList.add('animated');
+                    setTimeout(() => {
+                        digit.textContent = '1';
+                        if (index === digits.length - 1) {
+                            setTimeout(startTextAnimation, 500);
+                        }
+                    }, 500);
+                }, index * 300);
+            });
+        }
+        
+        function startTextAnimation() {
+            bigQuestion.classList.add('shrink');
+            
+            setTimeout(() => {
+                messageContainer.style.opacity = 1;
+                messageContainer.style.visibility = 'visible';
+                messageContainer.classList.add('typing');
+                
+                let charIndex = 0;
+                const typeNextChar = () => {
+                    if (charIndex < messageText.length) {
+                        messageContainer.textContent = messageText.substring(0, charIndex + 1);
+                        charIndex++;
+                        setTimeout(typeNextChar, 100);
+                    } else {
+                        messageContainer.classList.remove('typing');
+                        messageContainer.classList.add('message-visible');
+                    }
+                };
+                
+                typeNextChar();
+            }, 300);
+        }
+        
+        document.body.addEventListener('click', startAnimations);
+        document.body.addEventListener('touchstart', startAnimations);
+    </script>
+</body>
+</html>
